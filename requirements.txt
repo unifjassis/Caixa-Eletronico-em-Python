@@ -1,0 +1,4 @@
+# Dependências do projeto
+
+# Exemplo:
+# tkinter
