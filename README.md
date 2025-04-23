@@ -29,13 +29,14 @@ Simulação de um sistema de caixa eletrônico (ATM) com autenticação, transa�
 
 ## ▶️ Como Rodar o Projeto
 
-1. Clone o repositório:
-git clone https://github.com/seu-usuario/seu-repo.git  
-cd seu-repo
+1. Clone o repositório:  
+git clone https://github.com/unifjassis/Caixa-Eletronico-em-Python.git  
+cd Caixa-Eletronico-em-Python
 
-2. Execute o main.py
+3. Execute o main.py
 
-3. Crie uma conta ou entre em uma existente via terminal.
+4. Crie uma conta via terminal.
+---
 
 🧪 Como Executar os Testes
 Pelo terminal:
@@ -53,6 +54,7 @@ Para exibir os testes individualmente:
 ```
 python -m unittest discover -s tests -v
 ```
+---
 
 📁 Estrutura de Pastas
 ```
@@ -74,7 +76,7 @@ caixa_eletronico/
 ├── README.md
 └── requirements.txt
 ```
-
+---
 ```
 MIT License
 
