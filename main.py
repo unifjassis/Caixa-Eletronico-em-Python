@@ -1,4 +1,7 @@
 from models.banco import Banco
+from services.persistencia import salvar_conta, carregar_contas
+from services.operacoes import sacar, depositar, transferir
+import os
 
 def menu():
     print("\n===== Caixa Eletrônico =====")
@@ -7,25 +10,27 @@ def menu():
     print("3. Sair")
     return input("Escolha uma opção: ")
 
-def menu_conta(conta):
+def menu_conta(conta, banco):
     while True:
         print(f"\nBem-vindo(a), {conta.titular}!")
         print("1. Ver saldo")
         print("2. Depositar")
         print("3. Sacar")
         print("4. Extrato")
-        print("5. Sair da conta")
+        print("5. Transferir")
+        print("6. Encerrar conta")
+        print("7. Sair da conta")
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
             print(f"Saldo atual: R${conta.saldo:.2f}")
         elif opcao == "2":
             valor = float(input("Valor para depósito: R$"))
-            conta.depositar(valor)
+            depositar(conta, valor)
             print("Depósito realizado com sucesso!")
         elif opcao == "3":
             valor = float(input("Valor para saque: R$"))
-            if conta.sacar(valor):
+            if sacar(conta, valor):
                 print("Saque realizado com sucesso!")
             else:
                 print("Saldo insuficiente.")
@@ -34,12 +39,40 @@ def menu_conta(conta):
             for mov in conta.mostrar_extrato():
                 print("-", mov)
         elif opcao == "5":
+            destino = input("Número da conta destino: ")
+            if destino == conta.numero:
+                print("Não é possível transferir para a mesma conta.")
+                continue
+            if destino in banco.contas:
+                valor = float(input("Valor da transferência: R$"))
+                if transferir(conta, banco.contas[destino], valor):
+                    print("Transferência realizada com sucesso!")
+                else:
+                    print("Saldo insuficiente.")
+            else:
+                print("Conta destino não encontrada.")
+        elif opcao == "6":
+            if conta.saldo == 0:
+                confirm = input("Tem certeza que deseja encerrar a conta? (s/n): ")
+                if confirm.lower() == "s":
+                    del banco.contas[conta.numero]
+                    caminho = os.path.join("data", f"conta_{conta.numero}.txt")
+                    if os.path.exists(caminho):
+                        os.remove(caminho)
+                    print("Conta encerrada com sucesso!")
+                    break
+                else:
+                    print("Encerramento cancelado.")
+            else:
+                print("Conta só pode ser encerrada com saldo zero.")
+        elif opcao == "7":
             break
         else:
             print("Opção inválida.")
 
 def main():
     banco = Banco()
+    banco.contas = carregar_contas()
 
     while True:
         opcao = menu()
@@ -48,6 +81,7 @@ def main():
             titular = input("Nome do titular: ")
             senha = input("Senha: ")
             if banco.criar_conta(numero, titular, senha):
+                salvar_conta(banco.contas[numero])
                 print("Conta criada com sucesso!")
             else:
                 print("Conta já existe.")
@@ -56,7 +90,7 @@ def main():
             senha = input("Senha: ")
             conta = banco.autenticar(numero, senha)
             if conta:
-                menu_conta(conta)
+                menu_conta(conta, banco)
             else:
                 print("Dados inválidos.")
         elif opcao == "3":
